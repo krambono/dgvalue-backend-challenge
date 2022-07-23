@@ -19,8 +19,8 @@ describe('Retrieve categories query handler', () => {
 
   it('should retrieve all categories', async () => {
     const categories: Category[] = [
-      { id: 'cat1-id', name: 'Products' },
-      { id: 'cat2-id', name: 'Chocolate' }
+      { id: 1, name: 'Products' },
+      { id: 2, name: 'Chocolate' }
     ];
 
     categoryDAO.feedWith(...categories);
