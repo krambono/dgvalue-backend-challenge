@@ -6,7 +6,5 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "collectCoverageFrom": ["src/hexagon/**/*.ts"],
-  "coverageDirectory": "../coverage",
   "testEnvironment": "node"
 }

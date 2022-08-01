@@ -15,7 +15,7 @@ export default {
   development: {
     ...defaults,
     connection: {
-      filename: join(currentDir, 'db.sqlite')
+      filename: join(currentDir, 'db.sqlite').replace('dist', 'src')
     },
     seeds: {
       directory: join(currentDir, 'seeds')
