@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { SqliteCategoryDao } from './adapters/secondary/category-dao/sqlite-category-dao';
 import { Knex } from 'knex';
 import { getKnexConnection } from './adapters/secondary/sqlite/utils';
@@ -17,4 +17,10 @@ import { getKnexConnection } from './adapters/secondary/sqlite/utils';
   ],
   exports: ['CATEGORY_DAO']
 })
-export class DependenciesModule {}
+export class DependenciesModule implements OnModuleDestroy {
+  public constructor(@Inject('KNEX') private knex: Knex) {}
+
+  async onModuleDestroy() {
+    await this.knex.destroy();
+  }
+}
