@@ -2,31 +2,55 @@ import { Knex } from 'knex';
 import { categories } from './data/categories.json';
 import { volumes } from './data/volumes.json';
 
+interface CategoryEntity {
+  id: number;
+  name: string;
+  parent_id: number | null;
+}
+
+interface CategoryClosureEntity {
+  ancestor_id: number;
+  descendant_id: number;
+}
+
+interface VolumeEntity {
+  category_id: number;
+  date: string;
+  volume: number;
+}
+
 export async function seed(knex: Knex): Promise<void> {
+  await cleanTables(knex);
+  await insertCategories(knex);
+  await insertCategoriesClosure(knex);
+  await insertVolumes(knex);
+}
+
+async function cleanTables(knex: Knex) {
   await knex('volumes').del();
   await knex('categories_closure').del();
   await knex('categories').del();
+}
 
-  for (const category of categories) {
-    await knex.raw('INSERT INTO categories (id, name, parent_id) VALUES (?, ?, ?)', [
-      category.id,
-      category.name,
-      category.ancestors[category.depth - 1]?.id ?? null
-    ]);
+async function insertCategories(knex: Knex) {
+  const rawCategories = categories.map(category => ({
+    id: category.id,
+    name: category.name,
+    parent_id: category.ancestors[category.depth - 1]?.id ?? null
+  }));
+  await knex<CategoryEntity>('categories').insert(rawCategories);
+}
 
-    for (const ancestor of category.ancestors) {
-      await knex.raw('INSERT INTO categories_closure (ancestor_id, descendant_id) VALUES (?, ?)', [
-        ancestor.id,
-        category.id
-      ]);
-    }
-  }
+async function insertCategoriesClosure(knex: Knex) {
+  const rawCategoriesClosure = categories.reduce(
+    (ancestors, category) =>
+      ancestors.concat(category.ancestors.map(ancestor => ({ ancestor_id: ancestor.id, descendant_id: category.id }))),
+    [] as { ancestor_id: number; descendant_id: number }[]
+  );
 
-  for (const volume of volumes) {
-    await knex.raw('INSERT INTO volumes (category_id, date, volume) VALUES (?, ?, ?)', [
-      volume.category_id,
-      volume.date,
-      volume.volume
-    ]);
-  }
+  await knex<CategoryClosureEntity>('categories_closure').insert(rawCategoriesClosure);
+}
+
+async function insertVolumes(knex: Knex) {
+  await knex<VolumeEntity>('volumes').insert(volumes);
 }
