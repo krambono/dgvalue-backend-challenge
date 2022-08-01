@@ -1,33 +1,26 @@
 # Digital Value Backend Challenge
 
-Welcome to the Digital Value Backend Challenge! Thank for your interest in participating in our selection process.
+This repository contains my solution to the challenge.
 
-## Goal
+You can find the original subjects in the [subjects folder](./subjects/).
 
-The objective is to manipulate some data from an sqlite database and build an api to access it.
+At first use, you have to run migrations and seeds with the following commands :
 
-Each level of the challenge is based on top of the previous one, so you can leverage what you already did.
+```bash
+npm run migrations
+npm run seeds
+```
 
-## Guidelines
+Afterwards, you can start the server with the following command :
 
-- Clone the repo (do not fork it) and work on top of it
-- Implement each level in ascending order
-- Commit at the end of each level
-- Provide instructions to run each level of the challenge
-- Optionally, host the last level of the challenge
+```bash
+NODE_ENV=development npm run start
+```
 
-## Rules
+You may write the environment variable NODE_ENV in a `.env` file at root project, following the [.env.template](./.env.template) structure.
 
-- Use Node.js, you can use any frameworks or libs
-- TypeScript is preferred but not required
-- Use version control to deliver the test
+You can use the command `npm run test` to run all tests (unit, integration and end to end).
 
-## What will be evaluated?
+Levels are tagged with git.
 
-- Clean, readable and well-organized code
-- Compliance with guidelines and rules
-- Logic used to write/build sql queries
-- API routes design
-
-Let's get started! Go to [First level](level1)
-
+For the **level 1**, you can access the categories endpoint with the url : [http://localhost:3001/categories](http://localhost:3001/categories).

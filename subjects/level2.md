@@ -48,4 +48,4 @@ Add the `children` attribute to the existing GET endpoint that satisfies the fol
 ]
 ```
 
-Then go to [next level](../level3)
+Then go to [next level](./level3.md)

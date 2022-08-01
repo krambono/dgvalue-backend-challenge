@@ -84,4 +84,4 @@ Implement a GET endpoint that exposes the categories and satisfies the following
 ]
 ```
 
-Then go to [next level](../level2)
+Then go to [next level](./level2.md)
