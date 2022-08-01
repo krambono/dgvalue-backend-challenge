@@ -3,8 +3,8 @@ import { getEnvironment } from 'src/shared/get-environment';
 import { categoryTableName } from './entities/category.entity';
 import config from './knexfile';
 
-export function getKnexConnection(env?: 'test') {
-  return knex(config[env || getEnvironment()]);
+export function getKnexConnection() {
+  return knex(config[getEnvironment()]);
 }
 
 export async function migrateToLatest(knex: Knex) {

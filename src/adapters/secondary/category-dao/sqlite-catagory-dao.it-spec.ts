@@ -8,7 +8,7 @@ describe('Sqlite category dao integration tests', () => {
   let categoryDao: SqliteCategoryDao;
 
   beforeAll(async () => {
-    knex = getKnexConnection('test');
+    knex = getKnexConnection();
     await migrateToLatest(knex);
     await clearTables(knex);
     categoryDao = new SqliteCategoryDao(knex);
