@@ -29,8 +29,7 @@ describe('Categories (e2e)', () => {
       .expect(200, [
         { id: 1, name: 'Dogs' },
         { id: 2, name: 'Bulldog' }
-      ])
-      .expect(res => Array.isArray(res.body));
+      ]);
   });
 
   async function initializeDatabase() {
