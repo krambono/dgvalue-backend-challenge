@@ -1,5 +1,6 @@
 import knex, { Knex } from 'knex';
 import { getEnvironment } from 'src/shared/get-environment';
+import { categoryClosureTableName } from './entities/category-closure.entity';
 import { categoryTableName } from './entities/category.entity';
 import config from './knexfile';
 
@@ -12,7 +13,7 @@ export async function migrateToLatest(knex: Knex) {
 }
 
 export async function clearTables(knex: Knex) {
-  const tables = [categoryTableName];
+  const tables = [categoryClosureTableName, categoryTableName];
   for (const table of tables) {
     await knex(table).del();
   }

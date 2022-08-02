@@ -1,5 +1,9 @@
-export interface Category {
+interface BaseCategory {
   id: number;
   name: string;
-  children?: Category[];
+}
+
+export interface Category extends BaseCategory {
+  ancestors: BaseCategory[];
+  children?: BaseCategory[];
 }
