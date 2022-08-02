@@ -3,7 +3,7 @@ import { join } from 'path';
 const currentDir = __dirname;
 
 const defaults = {
-  client: 'sqlite3',
+  client: 'better-sqlite3',
   migrations: {
     tableName: 'knex_migrations',
     directory: join(currentDir, 'migrations')
