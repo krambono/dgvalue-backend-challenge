@@ -23,13 +23,25 @@ describe('Categories (e2e)', () => {
     await app.close();
   });
 
-  it('/categories GET should retrieve all categories', () => {
-    return request(app.getHttpServer())
-      .get('/categories')
-      .expect(200, [
-        { id: 1, name: 'Dogs' },
-        { id: 2, name: 'Bulldog' }
-      ]);
+  it('/categories GET should retrieve all categories', async () => {
+    const { status, body } = await request(app.getHttpServer()).get('/categories');
+    expect(status).toBe(200);
+    expect(body).toEqual([
+      {
+        id: 1,
+        name: 'Animals',
+        children: [
+          { id: 2, name: 'Dogs' },
+          { id: 4, name: 'Cats' },
+          { id: 6, name: 'Horses' }
+        ]
+      },
+      { id: 2, name: 'Dogs', children: [{ id: 3, name: 'Bulldog' }] },
+      { id: 3, name: 'Bulldog' },
+      { id: 4, name: 'Cats', children: [{ id: 5, name: 'Bengal cat' }] },
+      { id: 5, name: 'Bengal cat' },
+      { id: 6, name: 'Horses' }
+    ]);
   });
 
   async function initializeDatabase() {
@@ -37,8 +49,12 @@ describe('Categories (e2e)', () => {
     await migrateToLatest(knex);
     await clearTables(knex);
     await knex<CategoryEntity>('categories').insert([
-      { id: 1, name: 'Dogs' },
-      { id: 2, name: 'Bulldog', parent_id: 1 }
+      { id: 1, name: 'Animals' },
+      { id: 2, name: 'Dogs', parent_id: 1 },
+      { id: 3, name: 'Bulldog', parent_id: 2 },
+      { id: 4, name: 'Cats', parent_id: 1 },
+      { id: 5, name: 'Bengal cat', parent_id: 4 },
+      { id: 6, name: 'Horses', parent_id: 1 }
     ]);
   }
 });

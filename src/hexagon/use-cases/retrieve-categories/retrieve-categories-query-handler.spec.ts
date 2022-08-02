@@ -4,29 +4,29 @@ import { Category } from '../../models/category';
 
 describe('Retrieve categories query handler', () => {
   let categoryDAO: FakeCategoryDAO;
-  let retrieveCategoriesQueryHanler: RetrieveCategoriesQueryHandler;
+  let retrieveCategoriesQueryHandler: RetrieveCategoriesQueryHandler;
 
   beforeEach(() => {
     categoryDAO = new FakeCategoryDAO();
-    retrieveCategoriesQueryHanler = new RetrieveCategoriesQueryHandler(categoryDAO);
+    retrieveCategoriesQueryHandler = new RetrieveCategoriesQueryHandler(categoryDAO);
   });
 
   it('should retrieve no category if there is none', async () => {
-    const outputCategories = await retrieveCategoriesQueryHanler.handle();
+    const outputCategories = await retrieveCategoriesQueryHandler.handle();
 
     expect(outputCategories).toStrictEqual([]);
   });
 
   it('should retrieve all categories', async () => {
     const categories: Category[] = [
-      { id: 1, name: 'Products' },
+      { id: 1, name: 'Products', children: [{ id: 2, name: 'Chocolate' }] },
       { id: 2, name: 'Chocolate' }
     ];
 
     categoryDAO.feedWith(...categories);
 
-    const ouputCategories = await retrieveCategoriesQueryHanler.handle();
+    const outputCategories = await retrieveCategoriesQueryHandler.handle();
 
-    expect(ouputCategories).toStrictEqual(categories);
+    expect(outputCategories).toStrictEqual(categories);
   });
 });

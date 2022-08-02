@@ -28,4 +28,4 @@ You can use the command `npm test` to run all tests (unit, integration and end t
 
 Levels are tagged with git.
 
-For the **level 1**, you can access the categories endpoint with the url : [http://localhost:3001/categories](http://localhost:3001/categories).
+For the levels 1 and 2, you can access the categories endpoint with the url : [http://localhost:3001/categories](http://localhost:3001/categories).
