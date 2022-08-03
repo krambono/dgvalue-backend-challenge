@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
-import { Category } from 'src/hexagon/models/category';
+import { Category, CategoryWithVolume } from 'src/hexagon/models/category';
 import { CategoryDAO } from '../../../hexagon/secondary-ports/category-dao';
+import { CategoryEntity, categoryTableName } from '../sqlite/entities/category.entity';
 
 type SerializedCategory = { id: number; name: string; ancestors: string; children: string | null };
 
@@ -32,5 +33,33 @@ export class SqliteCategoryDao implements CategoryDAO {
         ? { id, name, ancestors: JSON.parse(ancestors), children: JSON.parse(children) }
         : { id, name, ancestors: JSON.parse(ancestors) }
     );
+  }
+
+  public async getCategoryWithAverageSearchVolume(
+    categoryId: number,
+    from: Date,
+    monthDifference: number
+  ): Promise<CategoryWithVolume | undefined> {
+    const categoryName = (
+      await this.knex<CategoryEntity>(categoryTableName).select('name').where({ id: categoryId }).first()
+    )?.name;
+
+    if (categoryName === undefined) {
+      return undefined;
+    }
+
+    const { averageMonthlyVolume }: { averageMonthlyVolume: number } = (
+      await this.knex.raw(
+        `
+        SELECT SUM(volume) / CAST(? as INT) as "averageMonthlyVolume"
+          FROM volumes
+          LEFT JOIN categories c on volumes.category_id = c.id
+          WHERE category_id IN (SELECT descendant_id FROM categories_closure WHERE ancestor_id = ?)
+            AND date >= ?
+      `,
+        [monthDifference, categoryId, from.toISOString()]
+      )
+    )[0];
+    return { category: { id: categoryId, name: categoryName }, averageMonthlyVolume };
   }
 }
