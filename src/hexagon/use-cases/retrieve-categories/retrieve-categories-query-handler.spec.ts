@@ -23,7 +23,7 @@ describe('Retrieve categories query handler', () => {
       { id: 2, name: 'Chocolate', ancestors: [{ id: 1, name: 'Products' }] }
     ];
 
-    categoryDAO.feedWith(...categories);
+    categoryDAO.feedCategoriesWith(...categories);
 
     const outputCategories = await retrieveCategoriesQueryHandler.handle();
 
