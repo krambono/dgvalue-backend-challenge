@@ -5,6 +5,7 @@ export class FakeCategoryDAO implements CategoryDAO {
   private _categories: Map<number, Category> = new Map();
   private _categoriesWithVolume: Map<number, CategoryWithVolume> = new Map();
   private _searchVolumeDate: Date;
+  private _monthDifference: number;
 
   public async findMany(): Promise<Category[]> {
     return Array.from(this._categories.values());
@@ -12,9 +13,11 @@ export class FakeCategoryDAO implements CategoryDAO {
 
   public async getCategoryWithAverageSearchVolume(
     categoryId: number,
-    from: Date
+    from: Date,
+    monthDifference: number
   ): Promise<CategoryWithVolume | undefined> {
     this._searchVolumeDate = from;
+    this._monthDifference = monthDifference;
     return this._categoriesWithVolume.get(categoryId);
   }
 
@@ -32,5 +35,9 @@ export class FakeCategoryDAO implements CategoryDAO {
 
   public get searchVolumeDate(): Date {
     return this._searchVolumeDate;
+  }
+
+  public get monthDifference() {
+    return this._monthDifference;
   }
 }

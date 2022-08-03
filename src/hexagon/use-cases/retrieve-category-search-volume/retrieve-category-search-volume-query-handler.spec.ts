@@ -1,6 +1,7 @@
 import { FakeCategoryDAO } from 'src/adapters/secondary/category-dao/fake-category-dao';
 import { StubDateProvider } from 'src/adapters/secondary/date-provider/stub-date-provider';
 import { CategoryWithVolume } from 'src/hexagon/models/category';
+import { createDate } from 'src/shared/create-date';
 import { RetrieveCategorySearchVolumeQuery } from './retrieve-category-search-volume-query';
 import { RetrieveCategorySearchVolumeQueryHandler } from './retrieve-category-search-volume-query-handler';
 
@@ -18,7 +19,7 @@ describe('Retrieve category search volume query handler', () => {
     categoryDao = new FakeCategoryDAO();
     dateProvider = new StubDateProvider();
     retrieveCategorySearchVolumeQueryHandler = new RetrieveCategorySearchVolumeQueryHandler(categoryDao, dateProvider);
-    dateProvider.currentDate = new Date(2022, 3, 16, 15, 0); // 2022/03/16 15:00:00
+    dateProvider.currentDate = createDate('16/04/2022', '15h20');
     categoryDao.feedCategoriesVolumeWith(validCategoryWithVolume);
   });
 
@@ -37,7 +38,8 @@ describe('Retrieve category search volume query handler', () => {
 
     const categoryWithVolume = await retrieveCategorySearchVolumeQueryHandler.handle(query);
 
-    expect(categoryDao.searchVolumeDate.toISOString()).toBe(new Date(2020, 3, 1, 0, 0).toISOString());
+    expect(categoryDao.searchVolumeDate.toISOString()).toBe(createDate('01/04/2020').toISOString());
+    expect(categoryDao.monthDifference).toBe(24);
     expect(categoryWithVolume).toStrictEqual(validCategoryWithVolume);
   });
 });
