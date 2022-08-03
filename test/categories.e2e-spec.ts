@@ -9,14 +9,22 @@ import { CategoryEntity, categoryTableName } from 'src/adapters/secondary/sqlite
 import { clearTables, migrateToLatest } from 'src/adapters/secondary/sqlite/utils';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { StubDateProvider } from '../src/adapters/secondary/date-provider/stub-date-provider';
+import { createDate } from '../src/shared/create-date';
+import { VolumeEntity, volumeTableName } from '../src/adapters/secondary/sqlite/entities/volume.entity';
+import { addMonths, subYears } from 'date-fns';
 
 describe('Categories (e2e)', () => {
   let app: INestApplication;
+  const now = createDate('01/04/2022');
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule]
-    }).compile();
+    })
+      .overrideProvider('DATE_PROVIDER')
+      .useValue(new StubDateProvider(now))
+      .compile();
 
     app = moduleRef.createNestApplication();
     await app.init();
@@ -63,6 +71,18 @@ describe('Categories (e2e)', () => {
     ]);
   });
 
+  it('/categories/:id GET should have a not found error if given category does not exist', async () => {
+    const { status, body } = await request(app.getHttpServer()).get('/categories/42');
+    expect(status).toBe(404);
+    expect(body.message).toBe('Category not found');
+  });
+
+  it('/categories/:id GET should retrieve a category with its search volume average over the last 24  months', async () => {
+    const { status, body } = await request(app.getHttpServer()).get('/categories/1');
+    expect(status).toBe(200);
+    expect(body).toStrictEqual({ category: { id: 1, name: 'Animals' }, averageMonthlyVolume: 80 });
+  });
+
   async function initializeDatabase() {
     const knex = await app.resolve<Knex>('KNEX');
     await migrateToLatest(knex);
@@ -90,5 +110,19 @@ describe('Categories (e2e)', () => {
       { ancestor_id: 5, descendant_id: 5 },
       { ancestor_id: 6, descendant_id: 6 }
     ]);
+
+    await knex<VolumeEntity>(volumeTableName).insert(createVolumes());
+  }
+
+  function createVolumes() {
+    const day2YearsBefore = subYears(now, 2);
+    let date = day2YearsBefore;
+    const volumes: VolumeEntity[] = [];
+    while (date < now) {
+      volumes.push({ category_id: 3, date: date.toISOString(), volume: 30 });
+      volumes.push({ category_id: 5, date: date.toISOString(), volume: 50 });
+      date = addMonths(date, 1);
+    }
+    return volumes;
   }
 });

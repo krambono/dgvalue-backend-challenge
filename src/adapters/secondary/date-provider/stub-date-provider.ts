@@ -1,7 +1,7 @@
 import { DateProvider } from 'src/hexagon/secondary-ports/date-provider';
 
 export class StubDateProvider implements DateProvider {
-  private date?: Date;
+  public constructor(private date?: Date) {}
 
   public now(): Date {
     if (!this.date) {
